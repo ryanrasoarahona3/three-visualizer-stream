@@ -33,6 +33,7 @@ export default class Sound {
         this._isPlaying = false;
         this._isLoaded = false;
         this._progress = 0;
+        this._audioStreamElement = null;
 
         // events
         this._onUpdate = this.onUpdate.bind(this);
@@ -67,11 +68,12 @@ export default class Sound {
     _load(src, callback) {
 
         if (src) {
-
             this._isLoaded = false;
             this._progress = 0;
 
+
             // Load asynchronously
+            /*
     		let request = new XMLHttpRequest();
     		request.open("GET", src, true);
     		request.responseType = "arraybuffer";
@@ -88,6 +90,14 @@ export default class Sound {
     			});
     		};
     		request.send();
+            */
+            let audio = new Audio(src);
+            audio.crossOrigin = "anonymous";
+            audio.addEventListener("loadedmetadata", ()=>{
+                this._isLoaded = true;
+                this._audioStreamElement = audio;
+                callback(audio);
+            })
         }
     }
 
@@ -104,7 +114,20 @@ export default class Sound {
     // sound actions
 
     play(offset = 0) {
+        console.log(this._audioStreamElement)
+        console.log(this.ctx)
+        if(this.req) cancelAnimationFrame(this.req);
+        this._onUpdate();
 
+        this._isPlaying = true;
+        this.sourceNode = this.ctx.createMediaElementSource(this._audioStreamElement)
+        this.sourceNode.connect(this.analyserNode);
+        this._audioStreamElement.play();
+        this.sourceNode.addEventListener("ended", this._onEnded, false);
+
+
+
+        /*
         if (this.req) cancelAnimationFrame(this.req);
         this._onUpdate();
 
@@ -117,6 +140,8 @@ export default class Sound {
         this.sourceNode.buffer = this._buffer;
         this.sourceNode.start(0, elapseTime);
         this.sourceNode.addEventListener('ended', this._onEnded, false);
+
+         */
     }
 
     pause() {

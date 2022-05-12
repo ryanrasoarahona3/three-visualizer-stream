@@ -1,7 +1,8 @@
 import Ellipse from './Ellipse'
 import utils from './../helpers/utils'
 import Sound from './Sound'
-import music from './../assets/sounds/music.mp3'
+
+let music = "https://radio.netpro.mg/esdes.mp3";
 
 let OrbitControls = require('three-orbit-controls')(THREE),
     Stats = require('stats.js'),
@@ -114,7 +115,8 @@ export default class App {
 
     importAudio() {
 
-        this.audio = new Sound(music, null, null, () => {
+        //this.audio = new Sound(music, null, null, () => {
+        this.audio = new Sound(music, null, null, ()=>{
             console.log(this.audio.progress)
 
             if (playSound) {
@@ -123,14 +125,17 @@ export default class App {
                 let landingButton = document.getElementById('landingButton')
                 let controls = document.getElementById('controls')
 
-                this.audio._load(music, () => {
+                this.audio._load(music, (audio) => {
+
                     loading.classList.add('hidden');
                     landingButton.classList.remove('hidden');
+                    console.log("ooo");
                     
                     landingButton.addEventListener('click', () => {
                         landingPage.style.display="none";
                         controls.classList.remove('hidden');
                         this.audio.play();
+
                     })
                 })
             }
